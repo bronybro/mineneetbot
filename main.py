@@ -1,8 +1,8 @@
 import keep_alive
 import discord
 import os
-import datetime
 import random
+from datetime import datetime
 from dotenv import load_dotenv
 from discord.ext import commands
 
@@ -11,8 +11,21 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 
 bot = commands.Bot(command_prefix='!')
-client = discord.Client()
-now = datetime.datetime.now()
+start_time = datetime.utcnow()
+
+
+@bot.command(name="uptime", pass_context=True)
+async def up_cmd(ctx):  # show bot uptime
+    now = datetime.utcnow()
+    delta = now - start_time
+    hours, remainder = divmod(int(delta.total_seconds()), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    days, hours = divmod(hours, 24)
+    fmt = "{h}h {m}m {s}s"
+    if days:
+        fmt = "{d}d " + fmt
+    fmt = fmt.format(fmt, d=days, h=hours, m=minutes, s=seconds)
+    await ctx.send(fmt)
 
 
 @bot.command(name='donate', pass_context=True)
@@ -35,8 +48,7 @@ async def on_ready():  # set bot ptesence
     for guild in bot.guilds:
         if guild.name == GUILD:
             break
-    print(f'{bot.user.name} has connected to Discord {now.strftime("%d-%m-%Y %H:%M")}\n'
-          f'{guild.name}(id: {guild.id})\n')
+    print(f'{bot.user.name} has connected to Discord server {guild.name}(id: {guild.id})  {start_time}\n')
     await bot.change_presence(activity=discord.Game("кости"))
 
 
