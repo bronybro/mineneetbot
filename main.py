@@ -18,7 +18,6 @@ bot.remove_command('help')
 start_time = datetime.utcnow()
 
 
-
 @bot.event
 async def on_member_join(member):  # say "Hello" when someone join GUILD
     await member.create_dm()
@@ -52,6 +51,10 @@ async def help_command(ctx):  # give list of bot commands
     emb = discord.Embed(title=' F.A.Q.:clipboard: ', color=0x2ecc71)
     emb.description = "Список команд бота"
     emb.add_field(name='{}clear :broom: '.format(command_prefix), value='Очистка чата (Админ)')
+    emb.add_field(name='{}mute :speak_no_evil: '.format(command_prefix), value='Выдать мут чата (Админ)')
+    emb.add_field(name='{}unmute :speaker: '.format(command_prefix), value='Снять мут чата (Админ)')
+    emb.add_field(name='{}kick :wastebasket: '.format(command_prefix), value='Кикнуть пользователя (Админ)')
+    emb.add_field(name='{}ban :banana: '.format(command_prefix), value='Забанить пользователя (Админ)')
     emb.add_field(name='{}d6 :game_die: '.format(command_prefix), value='Roll D6')
     emb.add_field(name='{}d20 :game_die: '.format(command_prefix), value='Roll D20')
     emb.add_field(name='{}uptime :timer: '.format(command_prefix), value='Аптайм бота')
@@ -67,12 +70,83 @@ async def clear(ctx, amount: int):  # clear chat
     await ctx.channel.purge(limit=amount + 1)
 
 
+@bot.command(name='kick', pass_context=True)
+@commands.has_permissions(administrator=True)
+async def kick(ctx, member: discord.Member, *, reason=None):  # kick user from server
+    emb = discord.Embed(title='Kick :wave:', colour=discord.Color.red())
+    await ctx.channel.purge(limit=1)
+    await member.kick(reason=reason)
+    emb.set_author(name=member.name, icon_url=member.avatar_url)
+    emb.add_field(name='Kick user', value='Kicked user : {}'.format(member.mention))
+    emb.set_footer(text='Был выгнан с сервера администратором {}'.format(ctx.author.name),
+                   icon_url=ctx.author.avatar_url)
+    await ctx.send(embed=emb)
+
+
+@bot.command(name='ban', pass_context=True)
+@commands.has_permissions(administrator=True)
+async def ban(ctx, member: discord.Member, *, reason=None):  # ban user
+    emb = discord.Embed(title='Ban :lock:', colour=discord.Color.dark_red())
+
+    await ctx.channel.purge(limit=1)
+
+    await member.ban(reason=reason)
+
+    emb.set_author(name=member.name, icon_url=member.avatar_url)
+    emb.add_field(name='Ban user', value='Baned user : {}'.format(member.mention))
+    emb.set_footer(text='Был заблокирован администратором {}'.format(ctx.author.name), icon_url=ctx.author.avatar_url)
+
+    await ctx.send(embed=emb)
+
+
+@bot.command(name='mute', pass_context=True)
+@commands.has_permissions(administrator=True)
+async def mute_user(ctx, member: discord.Member):  # mute user
+    await ctx.channel.purge(limit=1)
+    emb = discord.Embed(title='Mute :mute:', colour=discord.Color.gold())
+    mute_role = discord.utils.get(ctx.message.guild.roles, name='MUTED')
+    await member.add_roles(mute_role)
+    emb.set_author(name=member.name, icon_url=member.avatar_url)
+    emb.add_field(name='MUTE', value='Muted user : {}'.format(member.mention))
+    emb.set_footer(text='Был помещён в мут администратором {}'.format(ctx.author.name), icon_url=ctx.author.avatar_url)
+    await ctx.send(embed=emb)
+
+
+@bot.command(name='unmute', pass_context=True)
+@commands.has_permissions(administrator=True)
+async def mute_user(ctx, member: discord.Member):  # unmute user
+    await ctx.channel.purge(limit=1)
+    emb = discord.Embed(title='Mute :mute:', colour=discord.Color.gold())
+    mute_role = discord.utils.get(ctx.message.guild.roles, name='MUTED')
+    await member.remove_roles(mute_role)
+    emb.set_author(name=member.name, icon_url=member.avatar_url)
+    emb.add_field(name='MUTE', value='Muted user : {}'.format(member.mention))
+    emb.set_footer(text='Мут снят администратором {}'.format(ctx.author.name), icon_url=ctx.author.avatar_url)
+    await ctx.send(embed=emb)
+
+
 @clear.error
 async def clear_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send(f'{ctx.author.name}, укажите аргумент (количество удаляемых сообщений)!')
     if isinstance(error, commands.MissingPermissions):
         await ctx.send(f'{ctx.author.name}, не достаточно прав для выполнения данной команды!')
+
+
+@kick.error
+async def kick_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(f'{ctx.author.name}, обязательно укажите аргумент!')
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f'{ctx.author.name}, вы не обладаете такими правами!')
+
+
+@mute_user.error
+async def mute_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(f'{ctx.author.name}, обязательно укажите аргумент!')
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(f'{ctx.author.name}, вы не обладаете такими правами!')
 
 
 @bot.command(name="uptime", pass_context=True)
@@ -114,10 +188,11 @@ async def d20_roll(ctx):  # roll d20 dice
 def is_nsfw():
     async def predicate(ctx):
         return ctx.channel.is_nsfw()
+
     return commands.check(predicate)
 
 
-@bot.command(name='hentai',pass_context=True)
+@bot.command(name='hentai', pass_context=True)
 @is_nsfw()
 async def give_hentai(ctx, arg):
     hentaiargs = ['feet', 'yuri', 'trap', 'futanari', 'hololewd',
@@ -135,7 +210,7 @@ async def give_hentai(ctx, arg):
         await ctx.send(embed=emb)
 
 
-@bot.command(name='pic',pass_context=True)
+@bot.command(name='pic', pass_context=True)
 async def give_pic(ctx, arg):
     picargs = ['wallpaper', 'ngif', 'tickle', 'feed', 'gecg',
                'kemonomimi', 'poke', 'slap', 'avatar', 'holo',
@@ -146,6 +221,7 @@ async def give_pic(ctx, arg):
         emb.set_image(url=nekos.img(str(arg)))
         emb.description = "#" + arg
         await ctx.send(embed=emb)
+
 
 keep_alive.keep_alive()
 bot.run(TOKEN)
