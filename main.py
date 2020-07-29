@@ -93,24 +93,15 @@ async def donate(ctx):  # give link to Donate
 
 @bot.command(name='d6', pass_context=True)
 async def d6_roll(ctx):  # roll d6 dice
-    d6_list = ['d6/dice1.png',
-               'd6/dice2.png',
-               'd6/dice3.png',
-               'd6/dice4.png',
-               'd6/dice5.png',
-               'd6/dice6.png']
-    roll_d6 = random.choice(d6_list)
+    dir = 'd6'
+    roll_d6 = os.path.join(dir, random.choice(os.listdir(dir)))
     await ctx.send(file=discord.File(roll_d6))
 
 
 @bot.command(name='d20', pass_context=True)
 async def d20_roll(ctx):  # roll d20 dice
-    d20_list = ['d20/dice1.png', 'd20/dice6.png', 'd20/dice11.png', 'd20/dice16.png',
-                'd20/dice2.png', 'd20/dice7.png', 'd20/dice12.png', 'd20/dice17.png',
-                'd20/dice3.png', 'd20/dice8.png', 'd20/dice13.png', 'd20/dice18.png',
-                'd20/dice4.png', 'd20/dice9.png', 'd20/dice14.png', 'd20/dice19.png',
-                'd20/dice5.png', 'd20/dice10.png', 'd20/dice15.png', 'd20/dice20.png']
-    roll_d20 = random.choice(d20_list)
+    dir = 'd20'
+    roll_d20 = os.path.join(dir, random.choice(os.listdir(dir)))
     await ctx.send(file=discord.File(roll_d20))
 
 
