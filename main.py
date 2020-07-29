@@ -116,7 +116,7 @@ async def mute_user(ctx, member: discord.Member):  # mute user
 @commands.has_permissions(administrator=True)
 async def mute_user(ctx, member: discord.Member):  # unmute user
     await ctx.channel.purge(limit=1)
-    emb = discord.Embed(title='Mute :mute:', colour=discord.Color.gold())
+    emb = discord.Embed(title='Mute :speaker:', colour=discord.Color.gold())
     mute_role = discord.utils.get(ctx.message.guild.roles, name='MUTED')
     await member.remove_roles(mute_role)
     emb.set_author(name=member.name, icon_url=member.avatar_url)
