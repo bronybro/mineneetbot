@@ -51,7 +51,7 @@ async def help_command(ctx):  # give list of bot commands
     emb = discord.Embed(title=' F.A.Q.:clipboard: ', color=0x2ecc71)
     emb.description = "Список команд бота"
     emb.add_field(name='{}clear :broom: '.format(command_prefix), value='Очистка чата (Админ)')
-    emb.add_field(name='{}mute :speak_no_evil: '.format(command_prefix), value='Выдать мут чата (Админ)')
+    emb.add_field(name='{}mute :mute: '.format(command_prefix), value='Выдать мут чата (Админ)')
     emb.add_field(name='{}unmute :speaker: '.format(command_prefix), value='Снять мут чата (Админ)')
     emb.add_field(name='{}kick :wastebasket: '.format(command_prefix), value='Кикнуть пользователя (Админ)')
     emb.add_field(name='{}ban :banana: '.format(command_prefix), value='Забанить пользователя (Админ)')
