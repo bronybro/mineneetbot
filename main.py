@@ -1,7 +1,9 @@
+#!/usr/bin/python3.7
 import keep_alive
 import discord
 import os
 import random
+import nekos
 from datetime import datetime
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -12,7 +14,9 @@ GUILD = os.getenv('DISCORD_GUILD')
 
 bot = commands.Bot(command_prefix='!')
 bot.remove_command('help')
+
 start_time = datetime.utcnow()
+
 
 
 @bot.event
@@ -45,12 +49,14 @@ async def on_member_update(before, after):  # send in text channel information a
 @commands.has_permissions(administrator=True)
 async def help_command(ctx):  # give list of bot commands
     command_prefix = '!'
-    emb = discord.Embed(title=' F.A.Q.:clipboard: ')
+    emb = discord.Embed(title=' F.A.Q.:clipboard: ', color=0x2ecc71)
     emb.description = "Список команд бота"
     emb.add_field(name='{}clear :broom: '.format(command_prefix), value='Очистка чата (Админ)')
     emb.add_field(name='{}d6 :game_die: '.format(command_prefix), value='Roll D6')
     emb.add_field(name='{}d20 :game_die: '.format(command_prefix), value='Roll D20')
     emb.add_field(name='{}uptime :timer: '.format(command_prefix), value='Аптайм бота')
+    emb.add_field(name='{}pic :frame_photo: '.format(command_prefix), value='Получить картинку или gif')
+    emb.add_field(name='{}hentai :heart_eyes: '.format(command_prefix), value='Получить 18+ картинку или gif(NSFW)')
     emb.add_field(name='{}donate :moneybag: '.format(command_prefix), value='Поддержать проект')
     await ctx.send(embed=emb)
 
@@ -104,6 +110,42 @@ async def d20_roll(ctx):  # roll d20 dice
     roll_d20 = os.path.join(dir, random.choice(os.listdir(dir)))
     await ctx.send(file=discord.File(roll_d20))
 
+
+def is_nsfw():
+    async def predicate(ctx):
+        return ctx.channel.is_nsfw()
+    return commands.check(predicate)
+
+
+@bot.command(name='hentai',pass_context=True)
+@is_nsfw()
+async def give_hentai(ctx, arg):
+    hentaiargs = ['feet', 'yuri', 'trap', 'futanari', 'hololewd',
+                  'lewdkemo', 'solog', 'feetg', 'cum', 'erokemo',
+                  'les', 'lewdk', 'lewd', 'eroyuri', 'eron', 'cum_jpg',
+                  'bj', 'nsfw_neko_gif', 'solo', 'nsfw_avatar', 'gasm',
+                  'anal', 'hentai', 'erofeet', 'keta', 'blowjob', 'pussy',
+                  'tits', 'holoero', 'pussy_jpg', 'pwankg', 'classic',
+                  'kuni', 'femdom', 'spank', 'erok', 'boobs',
+                  'random_hentai_gif', 'smallboobs', 'ero']
+    if arg in hentaiargs:
+        emb = discord.Embed(color=0x2ecc71)
+        emb.set_image(url=nekos.img(str(arg)))
+        emb.description = "#" + arg
+        await ctx.send(embed=emb)
+
+
+@bot.command(name='pic',pass_context=True)
+async def give_pic(ctx, arg):
+    picargs = ['wallpaper', 'ngif', 'tickle', 'feed', 'gecg',
+               'kemonomimi', 'poke', 'slap', 'avatar', 'holo',
+               'pat' 'waifu', '8ball', 'kiss', 'neko', 'cuddle',
+               'fox_girl', 'hug', 'smug', 'baka']
+    if arg in picargs:
+        emb = discord.Embed(color=0x2ecc71)
+        emb.set_image(url=nekos.img(str(arg)))
+        emb.description = "#" + arg
+        await ctx.send(embed=emb)
 
 keep_alive.keep_alive()
 bot.run(TOKEN)
