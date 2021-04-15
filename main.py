@@ -1,12 +1,14 @@
 #!/usr/bin/python3.7
-import keep_alive
-import discord
 import os
 import random
-import nekos
 from datetime import datetime
-from dotenv import load_dotenv
+
+import discord
+import nekos
 from discord.ext import commands
+from dotenv import load_dotenv
+
+import app
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -26,7 +28,7 @@ async def on_member_join(member):  # say "Hello" when someone join GUILD
 
 
 @bot.event
-async def on_ready():  # set bot ptesence
+async def on_ready():  # set bot presence
     for guild in bot.guilds:
         if guild.name == GUILD:
             break
@@ -165,7 +167,7 @@ async def up_cmd(ctx):  # show bot uptime
 
 @bot.command(name='donate', pass_context=True)
 async def donate(ctx):  # give link to Donate
-    donation_alerts = 'Вот ссылочка на DonationAlerts:\nhttps://www.donationalerts.com/r/mineneet'
+    donation_alerts = 'Вот ссылочка на DonationAlerts:\nhttps://www.donationalerts.com/'
     embed_obj = discord.Embed(description=donation_alerts)
     await ctx.send(embed=embed_obj)
     await ctx.send(file=discord.File('donate.png'))
@@ -223,5 +225,5 @@ async def give_pic(ctx, arg):
         await ctx.send(embed=emb)
 
 
-keep_alive.keep_alive()
+app.keep_alive()
 bot.run(TOKEN)
