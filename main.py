@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 import app
 
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
+TOKEN = os.getenv('DISCORD_TOKEN')  # bot token from .env
+GUILD = os.getenv('DISCORD_GUILD')  # guild id from .env
 
 bot = commands.Bot(command_prefix='!')
 bot.remove_command('help')
